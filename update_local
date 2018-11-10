@@ -1,0 +1,49 @@
+#!/bin/bash
+
+echo "UPDATE_LOCAL"
+
+# Parse args
+force=false
+for arg in "$@"; do
+    shift
+    case $arg in
+        "--force"|"-f") force=true;;
+    esac
+done
+
+files=".bash_profile .bashrc .inputrc .vimrc"
+for file in $files; do
+    # If the file doesn't exist in $HOME, just put it there and be done.
+    if [ ! -f "$HOME/$file" ]; then
+        echo "No existing $file in \$HOME. Copying repo $file"
+        cp $file $HOME/$file
+    else
+        # If the file exists but is the same as the repo version, nothing to do.
+        # diff sets $? to 0 for exact matches, otherwise 1
+        differences=$(diff $file $HOME/$file)
+        if [ $? -eq 0 ]; then
+            echo "Existing $file in \$HOME is already updated. Taking no action."
+        # If the files exist and are different, prompt the user before
+        # overwriting, unless the --force flag is set.
+        else
+            echo "Existing $file in \$HOME is different from repo version."
+            if [ "$force" = true ]; then
+                echo "Force flag set. Overwriting $file in \$HOME."
+                cp $file $HOME/$file
+            else
+                echo "diff $file $HOME/$file"
+                echo "$differences"
+                # Make the user accept overwrite.
+                while true; do
+                    read -p "Do you wish to overwrite the local $file? [Y/N] " yn
+                    case $yn in
+                        [Yy]* ) cp $file $HOME/$file; break;;
+                        [Nn]* ) break;;
+                        * ) echo "Please answer yes or no.";;
+                    esac
+                done
+            fi
+        fi
+    fi
+    
+done
