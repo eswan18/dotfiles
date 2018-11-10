@@ -6,3 +6,5 @@ for directory in $dirs; do
         export PATH="$directory:$PATH"
     fi
 done
+
+export PS1="----- \u@\h -----\n\w \$ "
