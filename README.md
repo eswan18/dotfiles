@@ -5,16 +5,17 @@ Personal dotfiles, for use across all my MacOS and Linux systems.
 ### Installing on Remote Servers
 
 First, install [fabric](http://docs.fabfile.org/en/1.14/index.html) if you don't have it already.
-Create a file called `serverlist.txt`, in which you list the hostnames of the servers that you want to update.
+Create a file called `serverlist.txt`, in which you list the usernames, hostname, and port of each server that you want to update, in the form \<user\>@\<host\>:\<port\>.
 For example:
 ```
-myserver1
-myserver2
-myserver3
+ethan@myserver1:2222
+ethan@myserver2:2222
+ethan@myserver3:2222
 ```
 Save the file in this directory.
 Then simply call
 ```
-fab update_remote
+python update_remote.py
 ```
-fabric will ssh to each server and update the dotfiles there.
+The script will attempt to ssh to each server, prompting you for your password each time.
+This script does not currently support non--password-based authentication methods.
